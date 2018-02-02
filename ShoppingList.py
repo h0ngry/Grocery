@@ -1,8 +1,6 @@
 from selenium import webdriver
 #from selenium.webdriver.chrome.options import Options
-options = webdriver.ChromeOptions()
-options.add_argument('headless')
-browser = webdriver.Chrome(chrome_options=options) #replace with .Firefox(), or with the browser of your choice
+import os
 
 from tkinter import *
 
@@ -31,14 +29,17 @@ class MyFirstGUI:
         self.results_txt.grid(row=3,column=2)
 
 
-        self.label3 = Label(master,text="Grocery List (Right Click to Remove from List)")
+        self.label3 = Label(master,text="Grocery List (Copy and Paste from results)")
         self.label3.grid(row=2,column =3)
 
         self.list = Text(master, height=50, width=30)
         self.list.grid(row=3, column=3)
 
-        self.c = Button(master, text="Add to List", width=10, command=self.scrape)
-        self.c.grid(row=2, column=2)
+        self.c = Button(master, text="Create List", width=10, command=self.createList)
+        self.c.grid(row=1, column=2)
+
+        self.d = Button(master, text="New List", width=10, command=self.newList)
+        self.d.grid(row=1, column=3)
 
 
 
@@ -46,14 +47,25 @@ class MyFirstGUI:
         #self.list = Text(master,height = )
 
 
-    def greet(self):
-        print("Greetings!")
+    def createList(self):
+        list = self.list.get(1.0,END) + "\n"
+        with open("GroceryList.txt","a") as f:
+            f.write(list)
+
+    def newList(self):
+        os.remove("GroceryList.txt")
+
+
+
 
     def callback(self):
         print (self.e1.get())
 
     def scrape(self):
         self.results_txt.delete(1.0,END)
+        options = webdriver.ChromeOptions()
+        options.add_argument('headless')
+        browser = webdriver.Chrome(chrome_options=options)
         self.url = "https://www.heb.com/search/?q="+ self.e1.get()
         posts = []
         while posts == []:
@@ -75,6 +87,7 @@ class MyFirstGUI:
             self.results_txt.insert(END, result + '\n')
 
         browser.close()
+        browser.quit()
 
 
 
